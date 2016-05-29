@@ -21,7 +21,7 @@ var ExotelClient_ = function(sid, token) {
       "Authorization": "Basic " + Utilities.base64Encode(sid + ":" + token)
     }
   }
-}
+};
 
 /*
  * Connects your customer to the flow created in the Exotel dashboard.
@@ -112,7 +112,7 @@ ExotelClient_.prototype.makeCall_ = function(params) {
   options.payload = params;
 
   return this.makeRequest_(endpoint, options, 2);
-}
+};
 
 /*
  * Sends an SMS to the to an agent specified.
@@ -229,4 +229,4 @@ ExotelClient_.prototype.makeRequest_ = function(endpoint, options, retryLimit) {
     res = {};
   }
   return res;
-}
+};
