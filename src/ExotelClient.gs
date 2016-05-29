@@ -23,13 +23,13 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, timeLimit
   var options = this.baseHttpOptions_;
   options.method = "post";
   options.payload = {
-      "From": to,
-      "Url": "http://my.exotel.in/exoml/start/" + flowId,
-      "CallerId": exophone,
-      "TimeLimit": timeLimit,
-      "TimeOut": timeOut,
-      "StatusCallback": callbackUrl,
-      "CallType": "trans"
+    "From": to,
+    "Url": "http://my.exotel.in/exoml/start/" + flowId,
+    "CallerId": exophone,
+    "TimeLimit": timeLimit,
+    "TimeOut": timeOut,
+    "StatusCallback": callbackUrl,
+    "CallType": "trans"
   };
 
   var response = UrlFetchApp.fetch(endpoint, options);
@@ -41,13 +41,13 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
   var options = this.baseHttpOptions_;
   options.method = "post";
   options.payload = {
-      "From": to,
-      "To": agentNum,
-      "CallerId": exophone,
-      "TimeLimit": timeLimit,
-      "TimeOut": timeOut,
-      "StatusCallback": callbackUrl,
-      "CallType": "trans"
+    "From": to,
+    "To": agentNum,
+    "CallerId": exophone,
+    "TimeLimit": timeLimit,
+    "TimeOut": timeOut,
+    "StatusCallback": callbackUrl,
+    "CallType": "trans"
   };
 
   var response = UrlFetchApp.fetch(endpoint, options);
@@ -59,12 +59,12 @@ ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodin
   var options = this.baseHttpOptions_;
   options.method = "post";
   options.payload = {
-      "To": to,
-      "Body": body,
-      "From": exophone,
-      "Priority": priority,
-      "EncodingType": encodingType,
-      "StatusCallback": callbackUrl
+    "To": to,
+    "Body": body,
+    "From": exophone,
+    "Priority": priority,
+    "EncodingType": encodingType,
+    "StatusCallback": callbackUrl
   };
 
   var response = UrlFetchApp.fetch(endpoint, options);
