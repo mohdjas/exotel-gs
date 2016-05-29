@@ -13,7 +13,7 @@ var ExotelClient_ = function(sid, token) {
   this.baseHttpOptions_ = {
     "muteHttpExceptions": true,
     "headers": {
-      "Authorization": "Basic " + Utilities.base64Encode(sid + ":" + token);
+      "Authorization": "Basic " + Utilities.base64Encode(sid + ":" + token)
     }
   }
 }
