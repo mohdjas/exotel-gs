@@ -3,10 +3,6 @@
  * any required setup.
  */
 
-// Load the Underscore.js library. This library was added using the project
-// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
-var _ = Underscore.load();
-
 /**
  * Creates a new Exotel client with the name specified.
  * @param {string} sid The Sid of your Exotel account.
