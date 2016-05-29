@@ -109,6 +109,23 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
 };
 
 /*
+ * Connects your customer to an agent specified.
+ * @param {Object.<string, string>} params POST parameters to be passed.
+ * @return {Object} JSON object of the response from Exotel.
+ * @private
+ */
+ExotelClient_.prototype.makeCall_ = function(params) {
+  var endpoint = this.baseUrl_ + "/Calls/connect.json";
+  var options = this.baseHttpOptions_;
+  options.method = "post";
+
+  options.payload = params;
+
+  var response = UrlFetchApp.fetch(endpoint, options);
+  return JSON.parse(response.getContentText());
+}
+
+/*
  * Sends an SMS to the  to an agent specified.
  * @param {string} to The telephone number to which the SMS is to be sent.
  * @param {string} body The body of the message.
