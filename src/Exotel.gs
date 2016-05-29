@@ -1,12 +1,6 @@
-// Load the Underscore.js library. This library was added using the project
-// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
+// Load the Underscore.js library.
+// This library was added using the project key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
 var _ = Underscore.load();
-
-/**
- * Maximum number of retries for calls.
- * @const
- */
-var MAX_CALL_RETRIES_ = 1;
 
 /**
  * The supported SMS encoding types.

@@ -32,7 +32,7 @@ var ExotelClient_ = function(sid, token) {
  * @param {number} timeLimit The time limit of the call in seconds.
  * @param {number} timeOut The number of seconds to wait before call is picked up.
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
- * @return {Object} Response as JSON object, empty on non-recoverable error.
+ * @return {Object} Response object, empty on non-recoverable error.
  */
 ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, customField, timeLimit, timeOut, callbackUrl) {
   validate_({
@@ -71,7 +71,7 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, customFie
  * @param {number} timeLimit The time limit of the call in seconds.
  * @param {number} timeOut The number of seconds to wait before call is picked up.
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
- * @return {Object} Response as JSON object, empty on non-recoverable error.
+ * @return {Object} Response object, empty on non-recoverable error.
  */
 ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLimit, timeOut, callbackUrl) {
   validate_({
@@ -100,14 +100,29 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
 };
 
 /*
- * Sends an SMS to the  to an agent specified.
+ * Hits the Exotel 'make call' endpoint.
+ * @param {Object.<string, string>} params POST parameters to be passed.
+ * @return {Object} Response as JSON object, empty on non-recoverable error.
+ * @private
+ */
+ExotelClient_.prototype.makeCall_ = function(params) {
+  var endpoint = this.baseUrl_ + "/Calls/connect.json";
+  var options = this.baseHttpOptions_;
+  options.method = "post";
+  options.payload = params;
+
+  return this.makeRequest_(endpoint, options, 2);
+}
+
+/*
+ * Sends an SMS to the to an agent specified.
  * @param {string} to The telephone number to which the SMS is to be sent.
  * @param {string} body The body of the message.
  * @param {string} exophone The Exophone/sender ID that will be used to send the SMS.
  * @param {number} priority Specifies the priority of the SMS to be sent.
  * @param {number} encodingType Specifies if the body is of type 'plain' or 'unicode'.
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
- * @return {Object} JSON object of the response from Exotel.
+ * @return {Object} Response object, empty on non-recoverable error.
  */
 ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodingType, callbackUrl) {
   validate_({
@@ -134,22 +149,56 @@ ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodin
     options.payload.StatusCallback = callbackUrl;
   }
 
-  var response = UrlFetchApp.fetch(endpoint, options);
-  return JSON.parse(response.getContentText());
+  return this.makeRequest_(endpoint, options, 1);
 };
 
 /*
- * Connects your customer to an agent specified.
- * @param {Object.<string, string>} params POST parameters to be passed.
+ * Sends an SMS to the  to an agent specified.
+ * @param {string} callSid The Sid of the call whose details are to be fetched.
+ * @return {Object} JSON object of the response from Exotel.
+ */
+ExotelClient_.prototype.getCallDetails = function(callSid) {
+  validate_({
+    'callSid': callSid
+  });
+
+  var endpoint = this.baseUrl_ + "/Calls/" + callSid + ".json";
+  var options = this.baseHttpOptions_;
+  options.method = "get";
+
+  return this.makeRequest_(endpoint, options);
+};
+
+/*
+ * Sends an SMS to the  to an agent specified.
+ * @param {string} smsSid The Sid of the SMS whose details are to be fetched.
+ * @return {Object} JSON object of the response from Exotel.
+ */
+ExotelClient_.prototype.getSmsDetails = function(smsSid) {
+  validate_({
+    'smsSid': smsSid
+  });
+
+  var endpoint = this.baseUrl_ + "/Sms/Messages/" + callSid + ".json";
+  var options = this.baseHttpOptions_;
+  options.method = "get";
+
+  return this.makeRequest_(endpoint, options);
+};
+
+/*
+ * Hits an endpoint, retrying if possible. Expects JSON response from endpoint.
+ * @param {string} endpoint The URI to be hit.
+ * @param {Object.<string, string>} options Options object for the UrlFetchApp.
+ * @param {number} retryLimit Number of times to retry a request before giving up.
  * @return {Object} Response as JSON object, empty on non-recoverable error.
  * @private
  */
-ExotelClient_.prototype.makeCall_ = function(params) {
-  var endpoint = this.baseUrl_ + "/Calls/connect.json";
-  var options = this.baseHttpOptions_;
-  options.method = "post";
-  options.payload = params;
+ExotelClient_.prototype.makeRequest_ = function(endpoint, options, retryLimit) {
   var retry = false, tries = 0;
+  if (isEmpty_(retryLimit)) {
+    retryLimit = 0;
+  }
 
   try {
     do {
@@ -159,10 +208,10 @@ ExotelClient_.prototype.makeCall_ = function(params) {
 
       if (rawRes.getResponseCode() >= 500) {
         Logger.log("ERROR: Server failure. Attempting retry.");
-        if (tries <= MAX_CALL_RETRIES_) {
+        if (tries <= retryLimit) {
           retry = true;
         } else {
-          Logger.log("ERROR: Max retry attempts exhausted.");
+          Logger.log("ERROR: Retry attempts exhausted.");
           retry = false;
         }
       } else if (rawRes.getResponseCode() >= 400) {
@@ -181,39 +230,3 @@ ExotelClient_.prototype.makeCall_ = function(params) {
   }
   return res;
 }
-
-/*
- * Sends an SMS to the  to an agent specified.
- * @param {string} callSid The Sid of the call whose details are to be fetched.
- * @return {Object} JSON object of the response from Exotel.
- */
-ExotelClient_.prototype.getCallDetails = function(callSid) {
-  validate_({
-    'callSid': callSid
-  });
-
-  var endpoint = this.baseUrl_ + "/Calls/" + callSid + ".json";
-  var options = this.baseHttpOptions_;
-  options.method = "get";
-
-  var response = UrlFetchApp.fetch(endpoint, options);
-  return JSON.parse(response.getContentText());
-};
-
-/*
- * Sends an SMS to the  to an agent specified.
- * @param {string} smsSid The Sid of the SMS whose details are to be fetched.
- * @return {Object} JSON object of the response from Exotel.
- */
-ExotelClient_.prototype.getSmsDetails = function(smsSid) {
-  validate_({
-    'callSid': callSid
-  });
-
-  var endpoint = this.baseUrl_ + "/Sms/Messages/" + callSid + ".json";
-  var options = this.baseHttpOptions_;
-  options.method = "get";
-
-  var response = UrlFetchApp.fetch(endpoint, options);
-  return JSON.parse(response.getContentText());
-};
