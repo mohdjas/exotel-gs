@@ -18,6 +18,16 @@ var ExotelClient_ = function(sid, token) {
   }
 }
 
+/*
+ * Connects your customer to the flow created in the Exotel dashboard.
+ * @param {string} to The telephone number to dial.
+ * @param {number} flowId The ID of the flow to connect the number to.
+ * @param {string} exophone The Exophone that will be used to call the number.
+ * @param {number} timeLimit The time limit of the call in seconds.
+ * @param {number} timeOut The number of seconds to wait before call is picked up.
+ * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
+ * @return {Object} JSON object of the response from Exotel.
+ */
 ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, timeLimit, timeOut, callbackUrl) {
   var endpoint = this.baseUrl_ + "/Calls/connect.json";
   var options = this.baseHttpOptions_;
@@ -36,6 +46,16 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, timeLimit
   return JSON.parse(response.getContentText());
 };
 
+/*
+ * Connects your customer to an agent specified.
+ * @param {string} to The telephone number to dial.
+ * @param {string} agentNum The telephone number of the agent to connect to.
+ * @param {string} exophone The Exophone that will be used to call the number.
+ * @param {number} timeLimit The time limit of the call in seconds.
+ * @param {number} timeOut The number of seconds to wait before call is picked up.
+ * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
+ * @return {Object} JSON object of the response from Exotel.
+ */
 ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLimit, timeOut, callbackUrl) {
   var endpoint = this.baseUrl_ + "/Calls/connect.json";
   var options = this.baseHttpOptions_;
@@ -54,6 +74,16 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
   return JSON.parse(response.getContentText());
 };
 
+/*
+ * Sends an SMS to the  to an agent specified.
+ * @param {string} to The telephone number to which the SMS is to be sent.
+ * @param {string} body The body of the message.
+ * @param {string} exophone The Exophone/sender ID that will be used to send the SMS.
+ * @param {number} priority Specifies the priority of the SMS to be sent.
+ * @param {number} encodingType Specifies if the body is of type 'plain' or 'unicode'.
+ * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
+ * @return {Object} JSON object of the response from Exotel.
+ */
 ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodingType, callbackUrl) {
   var endpoint = this.baseUrl_ + "/Sms/send.json";
   var options = this.baseHttpOptions_;
@@ -71,6 +101,11 @@ ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodin
   return JSON.parse(response.getContentText());
 };
 
+/*
+ * Sends an SMS to the  to an agent specified.
+ * @param {string} callSid The Sid of the call whose details are to be fetched.
+ * @return {Object} JSON object of the response from Exotel.
+ */
 ExotelClient_.prototype.getCallDetails = function(callSid) {
   var endpoint = this.baseUrl_ + "/Calls/" + callSid + ".json";
   var options = this.baseHttpOptions_;
@@ -80,6 +115,11 @@ ExotelClient_.prototype.getCallDetails = function(callSid) {
   return JSON.parse(response.getContentText());
 };
 
+/*
+ * Sends an SMS to the  to an agent specified.
+ * @param {string} smsSid The Sid of the SMS whose details are to be fetched.
+ * @return {Object} JSON object of the response from Exotel.
+ */
 ExotelClient_.prototype.getSmsDetails = function(smsSid) {
   var endpoint = this.baseUrl_ + "/Sms/Messages/" + callSid + ".json";
   var options = this.baseHttpOptions_;
