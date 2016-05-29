@@ -5,10 +5,6 @@
  * @constructor
  */
 var ExotelClient_ = function(sid, token) {
-  validate_({
-    'sid': sid,
-    'token': token
-  });
   this.sid_ = sid;
   this.token_ = token;
   this.projectKey_ = eval('Script' + 'App').getProjectKey();
