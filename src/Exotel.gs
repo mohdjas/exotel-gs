@@ -13,12 +13,12 @@ var _ = Underscore.load();
  * @param {string} token The API token for your Exotel account.
  * @return {Exotel_} The Exotel client object.
  */
-function createClient(sid, token) {
+function create(sid, token) {
   return new ExotelClient_(sid, token);
 }
 
 if (module) {
   module.exports = {
-    createClient: createClient
+    createClient: create
   };
 }
