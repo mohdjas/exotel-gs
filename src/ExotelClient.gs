@@ -5,6 +5,11 @@
  * @constructor
  */
 var ExotelClient_ = function(sid, token) {
+  validate_({
+    'sid': sid,
+    'token': token
+  });
+
   this.sid_ = sid;
   this.token_ = token;
   this.projectKey_ = eval('Script' + 'App').getProjectKey();
@@ -28,7 +33,13 @@ var ExotelClient_ = function(sid, token) {
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
  * @return {Object} JSON object of the response from Exotel.
  */
-ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, timeLimit, timeOut, callbackUrl) {
+ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, _timeLimit, _timeOut, _callbackUrl) {
+  validate_({
+    'to': to,
+    'flowId': flowId,
+    'exophone': exophone
+  });
+
   var endpoint = this.baseUrl_ + "/Calls/connect.json";
   var options = this.baseHttpOptions_;
   options.method = "post";
@@ -36,11 +47,17 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, timeLimit
     "From": to,
     "Url": "http://my.exotel.in/exoml/start/" + flowId,
     "CallerId": exophone,
-    "TimeLimit": timeLimit,
-    "TimeOut": timeOut,
-    "StatusCallback": callbackUrl,
     "CallType": "trans"
   };
+  if (!isEmpty_(timeLimit)) {
+    options.payload.TimeLimit = timeLimit;
+  }
+  if (!isEmpty_(timeOut)) {
+    options.payload.TimeOut = timeOut;
+  }
+  if (!isEmpty_(callbackUrl)) {
+    options.payload.StatusCallback = callbackUrl;
+  }
 
   var response = UrlFetchApp.fetch(endpoint, options);
   return JSON.parse(response.getContentText());
@@ -57,18 +74,31 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, timeLimit
  * @return {Object} JSON object of the response from Exotel.
  */
 ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLimit, timeOut, callbackUrl) {
+  validate_({
+    'to': to,
+    'agentNum': agentNum,
+    'exophone': exophone
+  });
+
   var endpoint = this.baseUrl_ + "/Calls/connect.json";
   var options = this.baseHttpOptions_;
   options.method = "post";
+
   options.payload = {
     "From": to,
     "To": agentNum,
     "CallerId": exophone,
-    "TimeLimit": timeLimit,
-    "TimeOut": timeOut,
-    "StatusCallback": callbackUrl,
     "CallType": "trans"
   };
+  if (!isEmpty_(timeLimit)) {
+    options.payload.TimeLimit = timeLimit;
+  }
+  if (!isEmpty_(timeOut)) {
+    options.payload.TimeOut = timeOut;
+  }
+  if (!isEmpty_(callbackUrl)) {
+    options.payload.StatusCallback = callbackUrl;
+  }
 
   var response = UrlFetchApp.fetch(endpoint, options);
   return JSON.parse(response.getContentText());
@@ -85,17 +115,30 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
  * @return {Object} JSON object of the response from Exotel.
  */
 ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodingType, callbackUrl) {
+  validate_({
+    'to': to,
+    'body': flowId,
+    'exophone': exophone,
+    'priority': priority
+  });
+
   var endpoint = this.baseUrl_ + "/Sms/send.json";
   var options = this.baseHttpOptions_;
   options.method = "post";
   options.payload = {
     "To": to,
     "Body": body,
-    "From": exophone,
-    "Priority": priority,
-    "EncodingType": encodingType,
-    "StatusCallback": callbackUrl
+    "From": exophone
   };
+  if (!isEmpty_(priority)) {
+    options.payload.Priority = priority;
+  }
+  if (!isEmpty_(encodingType)) {
+    options.payload.EncodingType = encodingType;
+  }
+  if (!isEmpty_(callbackUrl)) {
+    options.payload.StatusCallback = callbackUrl;
+  }
 
   var response = UrlFetchApp.fetch(endpoint, options);
   return JSON.parse(response.getContentText());
@@ -107,6 +150,10 @@ ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodin
  * @return {Object} JSON object of the response from Exotel.
  */
 ExotelClient_.prototype.getCallDetails = function(callSid) {
+  validate_({
+    'callSid': callSid
+  });
+
   var endpoint = this.baseUrl_ + "/Calls/" + callSid + ".json";
   var options = this.baseHttpOptions_;
   options.method = "get";
@@ -121,6 +168,10 @@ ExotelClient_.prototype.getCallDetails = function(callSid) {
  * @return {Object} JSON object of the response from Exotel.
  */
 ExotelClient_.prototype.getSmsDetails = function(smsSid) {
+  validate_({
+    'callSid': callSid
+  });
+
   var endpoint = this.baseUrl_ + "/Sms/Messages/" + callSid + ".json";
   var options = this.baseHttpOptions_;
   options.method = "get";
