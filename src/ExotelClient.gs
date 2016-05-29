@@ -32,7 +32,7 @@ var ExotelClient_ = function(sid, token) {
  * @param {number} timeLimit The time limit of the call in seconds.
  * @param {number} timeOut The number of seconds to wait before call is picked up.
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
- * @return {Object} JSON object of the response from Exotel.
+ * @return {Object} Response as JSON object, empty on non-recoverable error.
  */
 ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, customField, timeLimit, timeOut, callbackUrl) {
   validate_({
@@ -71,7 +71,7 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, customFie
  * @param {number} timeLimit The time limit of the call in seconds.
  * @param {number} timeOut The number of seconds to wait before call is picked up.
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
- * @return {Object} JSON object of the response from Exotel.
+ * @return {Object} Response as JSON object, empty on non-recoverable error.
  */
 ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLimit, timeOut, callbackUrl) {
   validate_({
@@ -98,23 +98,6 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
 
   return this.makeCall_(params);
 };
-
-/*
- * Connects your customer to an agent specified.
- * @param {Object.<string, string>} params POST parameters to be passed.
- * @return {Object} JSON object of the response from Exotel.
- * @private
- */
-ExotelClient_.prototype.makeCall_ = function(params) {
-  var endpoint = this.baseUrl_ + "/Calls/connect.json";
-  var options = this.baseHttpOptions_;
-  options.method = "post";
-
-  options.payload = params;
-
-  var response = UrlFetchApp.fetch(endpoint, options);
-  return JSON.parse(response.getContentText());
-}
 
 /*
  * Sends an SMS to the  to an agent specified.
@@ -154,6 +137,50 @@ ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodin
   var response = UrlFetchApp.fetch(endpoint, options);
   return JSON.parse(response.getContentText());
 };
+
+/*
+ * Connects your customer to an agent specified.
+ * @param {Object.<string, string>} params POST parameters to be passed.
+ * @return {Object} Response as JSON object, empty on non-recoverable error.
+ * @private
+ */
+ExotelClient_.prototype.makeCall_ = function(params) {
+  var endpoint = this.baseUrl_ + "/Calls/connect.json";
+  var options = this.baseHttpOptions_;
+  options.method = "post";
+  options.payload = params;
+  var retry = false, tries = 0;
+
+  try {
+    do {
+      var rawRes = UrlFetchApp.fetch(endpoint, options);
+      tries++;
+      var res = JSON.parse(rawRes.getContentText());
+
+      if (rawRes.getResponseCode() >= 500) {
+        Logger.log("ERROR: Server failure. Attempting retry.");
+        if (tries <= MAX_CALL_RETRIES_) {
+          retry = true;
+        } else {
+          Logger.log("ERROR: Max retry attempts exhausted.");
+          retry = false;
+        }
+      } else if (rawRes.getResponseCode() >= 400) {
+        Logger.log("ERROR: Got [" + res.RestException.Status + "] with message:\n" + res.RestException.Message);
+        retry = false;
+      } else if (rawRes.getResponseCode() == 200) {
+        retry = false;
+      } else {
+        Logger.log("PANIC: Got [" + rawRes.getResponseCode() + "]");
+        retry = false, res = {};
+      }
+    } while(retry == true);
+  } catch(err) {
+    Logger.log("PANIC: Error thrown:\n" + err);
+    res = {};
+  }
+  return res;
+}
 
 /*
  * Sends an SMS to the  to an agent specified.
