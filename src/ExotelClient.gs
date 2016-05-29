@@ -41,30 +41,26 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, customFie
     'exophone': exophone
   });
 
-  var endpoint = this.baseUrl_ + "/Calls/connect.json";
-  var options = this.baseHttpOptions_;
-  options.method = "post";
-  options.payload = {
+  var params = {
     "From": to,
     "Url": "http://my.exotel.in/exoml/start/" + flowId,
     "CallerId": exophone,
     "CallType": "trans"
   };
   if (!isEmpty_(customField)) {
-    options.payload.CustomField = customField;
+    params.CustomField = customField;
   }
   if (!isEmpty_(timeLimit)) {
-    options.payload.TimeLimit = timeLimit;
+    params.TimeLimit = timeLimit;
   }
   if (!isEmpty_(timeOut)) {
-    options.payload.TimeOut = timeOut;
+    params.TimeOut = timeOut;
   }
   if (!isEmpty_(callbackUrl)) {
-    options.payload.StatusCallback = callbackUrl;
+    params.StatusCallback = callbackUrl;
   }
 
-  var response = UrlFetchApp.fetch(endpoint, options);
-  return JSON.parse(response.getContentText());
+  return this.makeCall_(params);
 };
 
 /*
@@ -84,28 +80,23 @@ ExotelClient_.prototype.connectToAgent = function(to, agentNum, exophone, timeLi
     'exophone': exophone
   });
 
-  var endpoint = this.baseUrl_ + "/Calls/connect.json";
-  var options = this.baseHttpOptions_;
-  options.method = "post";
-
-  options.payload = {
+  var params = {
     "From": to,
     "To": agentNum,
     "CallerId": exophone,
     "CallType": "trans"
   };
   if (!isEmpty_(timeLimit)) {
-    options.payload.TimeLimit = timeLimit;
+    params.TimeLimit = timeLimit;
   }
   if (!isEmpty_(timeOut)) {
-    options.payload.TimeOut = timeOut;
+    params.TimeOut = timeOut;
   }
   if (!isEmpty_(callbackUrl)) {
-    options.payload.StatusCallback = callbackUrl;
+    params.StatusCallback = callbackUrl;
   }
 
-  var response = UrlFetchApp.fetch(endpoint, options);
-  return JSON.parse(response.getContentText());
+  return this.makeCall_(params);
 };
 
 /*
