@@ -28,12 +28,13 @@ var ExotelClient_ = function(sid, token) {
  * @param {string} to The telephone number to dial.
  * @param {number} flowId The ID of the flow to connect the number to.
  * @param {string} exophone The Exophone that will be used to call the number.
+ * @param {string} customField App-specific value to be passed along with a GET request from your flow.
  * @param {number} timeLimit The time limit of the call in seconds.
  * @param {number} timeOut The number of seconds to wait before call is picked up.
  * @param {string} callbackUrl The URL on which a callback is to be made after the call is finished.
  * @return {Object} JSON object of the response from Exotel.
  */
-ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, _timeLimit, _timeOut, _callbackUrl) {
+ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, customField, timeLimit, timeOut, callbackUrl) {
   validate_({
     'to': to,
     'flowId': flowId,
@@ -49,6 +50,9 @@ ExotelClient_.prototype.connectToFlow = function(to, flowId, exophone, _timeLimi
     "CallerId": exophone,
     "CallType": "trans"
   };
+  if (!isEmpty_(customField)) {
+    options.payload.CustomField = customField;
+  }
   if (!isEmpty_(timeLimit)) {
     options.payload.TimeLimit = timeLimit;
   }
