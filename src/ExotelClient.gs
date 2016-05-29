@@ -122,8 +122,7 @@ ExotelClient_.prototype.sendSms = function(to, body, exophone, priority, encodin
   validate_({
     'to': to,
     'body': flowId,
-    'exophone': exophone,
-    'priority': priority
+    'exophone': exophone
   });
 
   var endpoint = this.baseUrl_ + "/Sms/send.json";
