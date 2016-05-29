@@ -13,8 +13,3 @@ function create(sid, token) {
   return new ExotelClient_(sid, token);
 }
 
-if (module) {
-  module.exports = {
-    createClient: create
-  };
-}
